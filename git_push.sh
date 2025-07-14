@@ -15,7 +15,7 @@ if ! git remote | grep -q origin; then
   echo "✅ Remote 'origin' set to $repo_url"
 fi
 
-# Stage all
+# Stage all files
 git add .
 
 # Detect changes
@@ -35,13 +35,30 @@ type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
 # Extract Completed and TODO from README.md
-completed_tasks=$(awk '/Completed:/,/^$/' README.md | grep '^- ' || echo "N/A")
-todo_tasks=$(awk '/TODO:/,/^$/' README.md | grep '^- ' || echo "N/A")
+completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- ' || echo "N/A")
+todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- ' || echo "N/A")
 
 # Footer
 footer="Auto-generated on $(date '+%Y-%m-%d %H:%M') from branch: $(git branch --show-current)"
 
-# Full commit message
+# Prepare changelog entry
+changelog_entry="### $type($scope): $description
+
+- Affected: $changed_files
+- Completed:
+$completed_tasks
+- TODO:
+$todo_tasks
+
+<footer>
+$footer
+"
+
+# Append to CHANGELOG.md before committing
+echo -e "\n$changelog_entry\n" >> CHANGELOG.md
+echo "📘 CHANGELOG.md updated!"
+
+# Prepare full commit message
 commit_msg="$type($scope): $description
 
 Automated commit based on detected changes in $scope.
@@ -55,24 +72,8 @@ $todo_tasks
 <footer>
 $footer"
 
-# Write commit
+# Commit
 echo "$commit_msg" | git commit -F -
-
-# Append to changelog
-changelog_entry="### $type($scope): $description
-
-- Affected: $changed_files
-- Completed:
-$completed_tasks
-- TODO:
-$todo_tasks
-
-<footer>
-$footer
-"
-
-echo -e "\n$changelog_entry\n" >> CHANGELOG.md
-echo "📘 CHANGELOG.md updated!"
 
 # Push
 git branch -M main
