@@ -34,9 +34,14 @@ description=$(sed -n '2p' changes.txt | tr -d '\r')
 type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
-# Get only the latest Completed & TODO section from README.md
-completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- \[x\]' | sed 's/^/  /')
-todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- \[ \]' | sed 's/^/  /')
+# Extract completed and todo tasks
+completed_tasks=$(awk '/^### ✅ Completed/,/^### /' README.md | grep '^- \[x\]' | sed 's/^/  /')
+todo_tasks=$(awk '/^### 📝 TODO/,/^### /' README.md | grep '^- \[ \]' | sed 's/^/  /')
+
+# Fallback if no match
+[ -z "$completed_tasks" ] && completed_tasks="  N/A"
+[ -z "$todo_tasks" ] && todo_tasks="  N/A"
+
 
 # If no tasks found, mark N/A
 [ -z "$completed_tasks" ] && completed_tasks="  N/A"
