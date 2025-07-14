@@ -252,3 +252,61 @@ Auto-generated on 2025-07-15 04:11 from branch: main
 Auto-generated on 2025-07-15 04:12 from branch: main
 
 
+
+### feat(core): initial backend & admin CRUD setup: 
+
+- Affected: CHANGELOG.md git_push.sh 
+- ✅ Completed:
+  - [x] feat(docker): set up Dockerized Django app with PostgreSQL
+  - [x] feat(models): add models for Project, Blog, Experience, Education
+  - [x] feat(api): add serializers, viewsets, and API routing
+  - [x] feat(admin-crud): add CRUD forms for Project, Blog, Experience, Education
+- 📝 TODO:
+  - [ ] feat(admin-auth): implement login/logout in admin panel using JWT
+  - [ ] feat(auth): integrate JWT authentication (Login, Refresh, Logout)
+  - [ ] feat(admin-panel): set up admin panel with React + TailwindCSS
+  - [ ] feat(admin-ui): add toast notifications & responsive Tailwind layout
+  - [ ] feat(api): add pagination, filtering & sorting
+  - [ ] feat(auth): implement role-based permissions
+  - [ ] chore(deploy): configure production-ready Render deployment
+  - [ ] feat(frontend): build UI pages — Homepage, Projects, Blogs, About
+  - [ ] feat(frontend): connect React frontend to API
+  - [ ] feat(frontend): add automatic skill aggregation from backend
+  - [ ] feat(frontend): integrate Three.js 3D sections
+  - [ ] feat(frontend): render markdown blogs in UI
+  - [ ] feat(admin-validation): add yup-based form validation
+  - [ ] feat(admin-ux): improve UX with preview/edit toggles
+
+<footer>
+Auto-generated on 2025-07-15 04:14 from branch: main
+
+
+
+### feat(core): initial backend & admin CRUD setup: 
+
+- Affected: CHANGELOG.md git_push.sh 
+- ✅ Completed:
+  - [x] feat(docker): set up Dockerized Django app with PostgreSQL
+  - [x] feat(models): add models for Project, Blog, Experience, Education
+  - [x] feat(api): add serializers, viewsets, and API routing
+  - [x] feat(admin-crud): add CRUD forms for Project, Blog, Experience, Education
+- 📝 TODO:
+  - [ ] feat(admin-auth): implement login/logout in admin panel using JWT
+  - [ ] feat(auth): integrate JWT authentication (Login, Refresh, Logout)
+  - [ ] feat(admin-panel): set up admin panel with React + TailwindCSS
+  - [ ] feat(admin-ui): add toast notifications & responsive Tailwind layout
+  - [ ] feat(api): add pagination, filtering & sorting
+  - [ ] feat(auth): implement role-based permissions
+  - [ ] chore(deploy): configure production-ready Render deployment
+  - [ ] feat(frontend): build UI pages — Homepage, Projects, Blogs, About
+  - [ ] feat(frontend): connect React frontend to API
+  - [ ] feat(frontend): add automatic skill aggregation from backend
+  - [ ] feat(frontend): integrate Three.js 3D sections
+  - [ ] feat(frontend): render markdown blogs in UI
+  - [ ] feat(admin-validation): add yup-based form validation
+  - [ ] feat(admin-ux): improve UX with preview/edit toggles
+
+<footer>
+Auto-generated on 2025-07-15 04:16 from branch: main
+
+

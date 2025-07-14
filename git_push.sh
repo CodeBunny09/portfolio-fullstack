@@ -34,20 +34,11 @@ description=$(sed -n '2p' changes.txt | tr -d '\r')
 type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
-# Extract completed and todo tasks
+# Extract tasks from README
 completed_tasks=$(grep '^- \[x\]' README.md | sed 's/^/  /')
 todo_tasks=$(grep '^- \[ \]' README.md | sed 's/^/  /')
 
-# Fallbacks if none found
-[ -z "$completed_tasks" ] && completed_tasks="  N/A"
-[ -z "$todo_tasks" ] && todo_tasks="  N/A"
-
-# Fallback if no match
-[ -z "$completed_tasks" ] && completed_tasks="  N/A"
-[ -z "$todo_tasks" ] && todo_tasks="  N/A"
-
-
-# If no tasks found, mark N/A
+# Fallbacks
 [ -z "$completed_tasks" ] && completed_tasks="  N/A"
 [ -z "$todo_tasks" ] && todo_tasks="  N/A"
 
@@ -56,7 +47,7 @@ timestamp=$(date '+%Y-%m-%d %H:%M')
 branch=$(git branch --show-current)
 footer="Auto-generated on $timestamp from branch: $branch"
 
-# Construct commit message
+# Final commit message
 commit_msg="$commit_type_scope: $description
 
 Automated commit based on detected changes in $scope.
@@ -73,10 +64,7 @@ $changed_files
 <footer>
 $footer"
 
-# Commit
-echo "$commit_msg" | git commit -F -
-
-# Write formatted entry to CHANGELOG.md
+# Write CHANGELOG entry before commit
 changelog_entry="### $commit_type_scope: $description
 
 - Affected: $changed_files
@@ -89,9 +77,13 @@ $todo_tasks
 $footer
 "
 
-# Append to CHANGELOG.md
+# Append to changelog and stage it
 echo -e "\n$changelog_entry\n" >> CHANGELOG.md
-echo "📘 CHANGELOG.md updated!"
+git add CHANGELOG.md
+echo "📘 CHANGELOG.md generated and staged!"
+
+# Perform the commit
+echo "$commit_msg" | git commit -F -
 
 # Push to GitHub
 git branch -M main
