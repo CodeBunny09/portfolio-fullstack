@@ -1,5 +1,6 @@
-django
 djangorestframework
 djangorestframework-simplejwt
 gunicorn
 psycopg2-binary
+Django>=4.2,<5.0
+django-cors-headers

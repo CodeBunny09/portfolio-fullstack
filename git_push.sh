@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "📦 Preparing to push code to GitHub..."
+echo "🚀 Automating commit + changelog generation..."
 
-# Init Git repo if not present
+# Git init if needed
 if [ ! -d ".git" ]; then
   git init
   echo "✅ Git repository initialized."
@@ -15,58 +15,66 @@ if ! git remote | grep -q origin; then
   echo "✅ Remote 'origin' set to $repo_url"
 fi
 
-# Stage all changes
+# Stage all
 git add .
 
-# Choose commit type
-echo ""
-echo "🧠 What type of commit is this?"
-select commit_type in "Feature (from feature.txt)" "Bugfix (prompted)" "Cancel"; do
-  case $REPLY in
-    1)
-      if [ -f "feature.txt" ]; then
-        commit_msg=$(<feature.txt)
-      else
-        echo "❌ feature.txt not found!"
-        exit 1
-      fi
-      break
-      ;;
-    2)
-      read -p "🔧 What is the scope (e.g. readme, models)? " scope
-      read -p "📝 Short description (1 line): " desc
-      read -p "✍️ One-liner summary of the fix: " body
-      read -p "✅ Completed task: " done
-      read -p "📝 TODO: " todo
-      read -p "📎 Footer note (optional): " footer
+# Detect changes
+changed_files=$(git diff --cached --name-only)
 
-      commit_msg="fix($scope): $desc
+# Load from changes.txt
+if [ ! -f "changes.txt" ]; then
+  echo "❌ Missing changes.txt! Create one with 2 lines:"
+  echo "Line 1: type(scope)"
+  echo "Line 2: short description"
+  exit 1
+fi
 
-$body
+commit_type_scope=$(sed -n '1p' changes.txt)
+description=$(sed -n '2p' changes.txt)
+type=$(echo "$commit_type_scope" | cut -d'(' -f1)
+scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
+
+# Extract Completed and TODO from README.md
+completed_tasks=$(awk '/Completed:/,/^$/' README.md | grep '^- ' || echo "N/A")
+todo_tasks=$(awk '/TODO:/,/^$/' README.md | grep '^- ' || echo "N/A")
+
+# Footer
+footer="Auto-generated on $(date '+%Y-%m-%d %H:%M') from branch: $(git branch --show-current)"
+
+# Full commit message
+commit_msg="$type($scope): $description
+
+Automated commit based on detected changes in $scope.
 
 Completed:
-- $done
+$completed_tasks
 
 TODO:
-- $todo
+$todo_tasks
 
 <footer>
 $footer"
-      break
-      ;;
-    3)
-      echo "❌ Cancelled."
-      exit 0
-      ;;
-    *)
-      echo "Please select a valid option (1–3)"
-      ;;
-  esac
-done
 
-# Commit and push
-git commit -m "$commit_msg"
+# Write commit
+echo "$commit_msg" | git commit -F -
+
+# Append to changelog
+changelog_entry="### $type($scope): $description
+
+- Affected: $changed_files
+- Completed:
+$completed_tasks
+- TODO:
+$todo_tasks
+
+<footer>
+$footer
+"
+
+echo -e "\n$changelog_entry\n" >> CHANGELOG.md
+echo "📘 CHANGELOG.md updated!"
+
+# Push
 git branch -M main
 git push -u origin main
-
-echo "🚀 Code pushed to GitHub with structured message!"
+echo "✅ Pushed to GitHub!"

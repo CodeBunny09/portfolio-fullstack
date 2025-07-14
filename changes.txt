@@ -1,0 +1,6 @@
+feat(core): initial backend & admin CRUD setup
+
+- Set up Dockerized Django app with PostgreSQL
+- Added models: Project, Blog, Experience, Education
+- Created serializers, viewsets, and routed API endpoints
+- Built admin panel CRUD forms for all models
