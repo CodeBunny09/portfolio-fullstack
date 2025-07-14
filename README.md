@@ -22,7 +22,7 @@ portfolio-fullstack/
 ├── git\_push.sh      # Automates GitHub commits & push
 ├── README.md        # This file
 
-````
+```
 
 ---
 
@@ -47,7 +47,8 @@ git clone https://github.com/YOUR_USERNAME/portfolio-fullstack.git
 cd portfolio-fullstack
 chmod +x setup.sh
 ./setup.sh
-````
+```
+
 
 ### 2. Backend (Django + Docker)
 
@@ -110,10 +111,11 @@ npm start
 
 ---
 
+
 ## 👨‍💻 Author
 
 **Pratik Choudhuri**
 
 * AI/ML Intern @ Labmentix
 * MCA @ Adamas University
-* [LinkedIn](#) | [GitHub](#)
+* [LinkedIn](https://www.linkedin.com/in/pratik-c/) | [GitHub](https://github.com/CodeBunny09)

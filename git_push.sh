@@ -2,23 +2,23 @@
 
 echo "📦 Preparing to push code to GitHub..."
 
-# Step 1: Git Init if needed
+# Init Git repo if not present
 if [ ! -d ".git" ]; then
   git init
   echo "✅ Git repository initialized."
 fi
 
-# Step 2: Set remote if missing
+# Add remote if missing
 if ! git remote | grep -q origin; then
-  read -p "🔗 Enter GitHub repo URL (e.g. https://github.com/yourusername/portfolio-fullstack.git): " repo_url
+  read -p "🔗 Enter GitHub repo URL: " repo_url
   git remote add origin "$repo_url"
   echo "✅ Remote 'origin' set to $repo_url"
 fi
 
-# Step 3: Add all changes
+# Stage all changes
 git add .
 
-# Step 4: Choose commit type
+# Choose commit type
 echo ""
 echo "🧠 What type of commit is this?"
 select commit_type in "Feature (from feature.txt)" "Bugfix (prompted)" "Cancel"; do
@@ -26,32 +26,47 @@ select commit_type in "Feature (from feature.txt)" "Bugfix (prompted)" "Cancel";
     1)
       if [ -f "feature.txt" ]; then
         commit_msg=$(<feature.txt)
-        echo "📝 Commit message loaded from feature.txt"
       else
-        echo "❌ feature.txt not found! Aborting."
+        echo "❌ feature.txt not found!"
         exit 1
       fi
       break
       ;;
     2)
-      read -p "🛠️ Describe the bugfix (e.g., added README): " fix_desc
-      commit_msg="fix: $fix_desc"
+      read -p "🔧 What is the scope (e.g. readme, models)? " scope
+      read -p "📝 Short description (1 line): " desc
+      read -p "✍️ One-liner summary of the fix: " body
+      read -p "✅ Completed task: " done
+      read -p "📝 TODO: " todo
+      read -p "📎 Footer note (optional): " footer
+
+      commit_msg="fix($scope): $desc
+
+$body
+
+Completed:
+- $done
+
+TODO:
+- $todo
+
+<footer>
+$footer"
       break
       ;;
     3)
-      echo "❌ Commit cancelled."
+      echo "❌ Cancelled."
       exit 0
       ;;
     *)
-      echo "Please choose a valid option (1 or 2)"
+      echo "Please select a valid option (1–3)"
       ;;
   esac
 done
 
-# Step 5: Commit and push
+# Commit and push
 git commit -m "$commit_msg"
 git branch -M main
 git push -u origin main
 
-echo "🚀 Code pushed to GitHub with message:"
-echo "\"$commit_msg\""
+echo "🚀 Code pushed to GitHub with structured message!"

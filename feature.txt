@@ -1,1 +1,15 @@
-feat: created README, chaned github workflow file
+fix(readme): rewrite full README.md to reflect actual structure
+
+Rewrote the entire README to reflect the real structure, workflow, and tech stack of the fullstack portfolio repo.
+
+Completed:
+- Updated project title and layout
+- Added setup instructions for backend, frontend, and admin panel
+- Described workflow and GitHub commit conventions
+
+TODO:
+- Add changelog file or generator
+- Link deployed Netlify/Render URLs in future commits
+
+<footer>
+Docs updated after project scaffold commit
