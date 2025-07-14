@@ -18,10 +18,10 @@ fi
 # Stage all changes
 git add .
 
-# Get list of staged files
+# Get list of staged files (one-liner + readable)
 changed_files=$(git diff --cached --name-only | tr '\n' ' ')
 
-# Load commit type & description from changes.txt
+# Load commit info from changes.txt
 if [ ! -f "changes.txt" ]; then
   echo "❌ Missing changes.txt! Create one with 2 lines:"
   echo "Line 1: type(scope)"
@@ -29,21 +29,25 @@ if [ ! -f "changes.txt" ]; then
   exit 1
 fi
 
-commit_type_scope=$(sed -n '1p' changes.txt)
-description=$(sed -n '2p' changes.txt)
+commit_type_scope=$(sed -n '1p' changes.txt | tr -d '\r')
+description=$(sed -n '2p' changes.txt | tr -d '\r')
 type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
-# Extract checkboxes from README
-completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- \[x\]' || echo "N/A")
-todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- \[ \]' || echo "N/A")
+# Get only the latest Completed & TODO section from README.md
+completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- \[x\]' | sed 's/^/  /')
+todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- \[ \]' | sed 's/^/  /')
 
-# Get timestamp and branch info
+# If no tasks found, mark N/A
+[ -z "$completed_tasks" ] && completed_tasks="  N/A"
+[ -z "$todo_tasks" ] && todo_tasks="  N/A"
+
+# Get metadata
 timestamp=$(date '+%Y-%m-%d %H:%M')
 branch=$(git branch --show-current)
 footer="Auto-generated on $timestamp from branch: $branch"
 
-# Commit message
+# Construct commit message
 commit_msg="$commit_type_scope: $description
 
 Automated commit based on detected changes in $scope.
@@ -58,13 +62,12 @@ Affected Files:
 $changed_files
 
 <footer>
-$footer
-"
+$footer"
 
-# Write commit
+# Commit
 echo "$commit_msg" | git commit -F -
 
-# Changelog entry
+# Write formatted entry to CHANGELOG.md
 changelog_entry="### $commit_type_scope: $description
 
 - Affected: $changed_files
