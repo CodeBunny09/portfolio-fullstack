@@ -35,8 +35,12 @@ type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
 # Extract completed and todo tasks
-completed_tasks=$(awk '/^### ✅ Completed/,/^### /' README.md | grep '^- \[x\]' | sed 's/^/  /')
-todo_tasks=$(awk '/^### 📝 TODO/,/^### /' README.md | grep '^- \[ \]' | sed 's/^/  /')
+completed_tasks=$(grep '^- \[x\]' README.md | sed 's/^/  /')
+todo_tasks=$(grep '^- \[ \]' README.md | sed 's/^/  /')
+
+# Fallbacks if none found
+[ -z "$completed_tasks" ] && completed_tasks="  N/A"
+[ -z "$todo_tasks" ] && todo_tasks="  N/A"
 
 # Fallback if no match
 [ -z "$completed_tasks" ] && completed_tasks="  N/A"
