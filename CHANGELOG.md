@@ -190,3 +190,20 @@ N/A
 Auto-generated on 2025-07-15 03:58 from branch: main
 
 
+
+### feat(core): 
+
+- Affected: CHANGELOG.md
+git_push.sh
+- Completed:
+- feat(docker): set up Dockerized Django app with PostgreSQL
+- feat(models): add models for Project, Blog, Experience, Education
+- feat(api): add serializers, viewsets, and API routing
+- feat(admin-crud): add CRUD forms for Project, Blog, Experience, Education
+- TODO:
+N/A
+
+<footer>
+Auto-generated on 2025-07-15 04:01 from branch: main
+
+

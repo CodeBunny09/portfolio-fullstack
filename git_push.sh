@@ -15,13 +15,13 @@ if ! git remote | grep -q origin; then
   echo "✅ Remote 'origin' set to $repo_url"
 fi
 
-# Stage all files
+# Stage all changes
 git add .
 
-# Detect changes
-changed_files=$(git diff --cached --name-only)
+# Get list of staged files
+changed_files=$(git diff --cached --name-only | tr '\n' ' ')
 
-# Load from changes.txt
+# Load commit type & description from changes.txt
 if [ ! -f "changes.txt" ]; then
   echo "❌ Missing changes.txt! Create one with 2 lines:"
   echo "Line 1: type(scope)"
@@ -34,48 +34,54 @@ description=$(sed -n '2p' changes.txt)
 type=$(echo "$commit_type_scope" | cut -d'(' -f1)
 scope=$(echo "$commit_type_scope" | sed -E 's/^[^(]+\(([^)]+)\).*/\1/')
 
-# Extract Completed and TODO from README.md
-completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- ' || echo "N/A")
-todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- ' || echo "N/A")
+# Extract checkboxes from README
+completed_tasks=$(awk '/^### ✅ Completed/,/^### 📝 TODO/' README.md | grep '^- \[x\]' || echo "N/A")
+todo_tasks=$(awk '/^### 📝 TODO/,/^$/' README.md | grep '^- \[ \]' || echo "N/A")
 
-# Footer
-footer="Auto-generated on $(date '+%Y-%m-%d %H:%M') from branch: $(git branch --show-current)"
+# Get timestamp and branch info
+timestamp=$(date '+%Y-%m-%d %H:%M')
+branch=$(git branch --show-current)
+footer="Auto-generated on $timestamp from branch: $branch"
 
-# Prepare changelog entry
-changelog_entry="### $type($scope): $description
+# Commit message
+commit_msg="$commit_type_scope: $description
+
+Automated commit based on detected changes in $scope.
+
+✅ Completed:
+$completed_tasks
+
+📝 TODO:
+$todo_tasks
+
+Affected Files:
+$changed_files
+
+<footer>
+$footer
+"
+
+# Write commit
+echo "$commit_msg" | git commit -F -
+
+# Changelog entry
+changelog_entry="### $commit_type_scope: $description
 
 - Affected: $changed_files
-- Completed:
+- ✅ Completed:
 $completed_tasks
-- TODO:
+- 📝 TODO:
 $todo_tasks
 
 <footer>
 $footer
 "
 
-# Append to CHANGELOG.md before committing
+# Append to CHANGELOG.md
 echo -e "\n$changelog_entry\n" >> CHANGELOG.md
 echo "📘 CHANGELOG.md updated!"
 
-# Prepare full commit message
-commit_msg="$type($scope): $description
-
-Automated commit based on detected changes in $scope.
-
-Completed:
-$completed_tasks
-
-TODO:
-$todo_tasks
-
-<footer>
-$footer"
-
-# Commit
-echo "$commit_msg" | git commit -F -
-
-# Push
+# Push to GitHub
 git branch -M main
 git push -u origin main
-echo "✅ Pushed to GitHub!"
+echo "✅ Code pushed to GitHub!"
